@@ -23,18 +23,20 @@ jobs:
         with:
           creds: '{"subscriptionId":"e6c26bc4-adcc-4139-a252-2dd836325cad","clientId":"ca524947-5d57-44aa-9a5a-6083411e0583","tenantId":"0b0fd2eb-b552-4536-923d-c808c8fdd80d","clientSecret":"iCK8Q~XfYY_odoEpZSRoF4DWPpEGXFSCTfijZaRK"}'
 
-      - name: Terraform
-        shell: powershell
-        run: |
-          Write-Host "Terraform Directory:"
-          Get-Location
-      
-          Write-Host "Terraform Files:"
-          Get-ChildItem -Path .\environment\dev -Filter *.tf
-      
-          terraform version
-          az account show
-      
-          terraform -chdir=environment/dev init
-          terraform -chdir=environment/dev validate
-          terraform -chdir=environment/dev plan
+     - name: Terraform
+      shell: powershell
+      run: |
+        Set-Location "$env:GITHUB_WORKSPACE\environment\dev"
+    
+        Write-Host "Current Terraform Directory:"
+        Get-Location
+    
+        Write-Host "Terraform Files:"
+        Get-ChildItem -Filter *.tf
+    
+        terraform version
+        az account show
+    
+        terraform init
+        terraform validate
+        terraform plan
