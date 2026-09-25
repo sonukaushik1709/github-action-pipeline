@@ -1,0 +1,33 @@
+name: Terraform Pipeline
+
+on:
+  push:
+    branches:
+      - feature/106
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          creds: '{"subscriptionId":"e6c26bc4-adcc-4139-a252-2dd836325cad","clientId":"ca524947-5d57-44aa-9a5a-6083411e0583","tenantId":"0b0fd2eb-b552-4536-923d-c808c8fdd80d","clientSecret":"iCK8Q~XfYY_odoEpZSRoF4DWPpEGXFSCTfijZaRK"}'
+
+      - name: Terraform
+        shell: powershell
+        run: |
+          terraform version
+          az account show
+          terraform init
+          terraform validate
+          terraform plan
