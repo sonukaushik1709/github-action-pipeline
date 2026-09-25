@@ -1,5 +1,4 @@
-```yaml
-name: Terraform Azure Pipeline
+name: Terraform Pipeline
 
 on:
   push:
@@ -11,135 +10,29 @@ on:
 permissions:
   contents: read
 
-
 jobs:
-
-  # ==========================================================
-  # JOB 1 - TEST SELF HOSTED RUNNER
-  # ==========================================================
-  runner-test:
-    name: Test Self Hosted Runner
-    runs-on: self-hosted
-
-    steps:
-
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Test Runner
-        shell: pwsh
-        run: |
-          Write-Host "======================================"
-          Write-Host "GitHub Actions Self Hosted Runner"
-          Write-Host "======================================"
-
-          Write-Host "Runner Name: $env:RUNNER_NAME"
-          Write-Host "Runner OS: $env:RUNNER_OS"
-          Write-Host "Runner Architecture: $env:RUNNER_ARCH"
-
-          Write-Host ""
-          Write-Host "Hostname:"
-          hostname
-
-          Write-Host ""
-          Write-Host "Current User:"
-          whoami
-
-
-  # ==========================================================
-  # JOB 2 - TERRAFORM
-  # ==========================================================
   terraform:
-    name: Terraform Init Plan
     runs-on: self-hosted
 
-    needs:
-      - runner-test
-
     steps:
-
-      # --------------------------------------------------------
-      # CHECKOUT
-      # --------------------------------------------------------
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
 
-
-      # --------------------------------------------------------
-      # TERRAFORM VERSION
-      # --------------------------------------------------------
-      - name: Check Terraform
-        shell: pwsh
-        run: |
-          Write-Host "Checking Terraform..."
-          terraform version
-
-
-      # --------------------------------------------------------
-      # AZURE LOGIN
-      # --------------------------------------------------------
       - name: Azure Login
         uses: azure/login@v3
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ {
+            "subscriptionId": "e6c26bc4-adcc-4139-a252-2dd836325cad",
+            "clientId": "ca524947-5d57-44aa-9a5a-6083411e0583",
+            "tenantId": "0b0fd2eb-b552-4536-923d-c808c8fdd80d",
+            "objectId": "26bbde6c-c4f9-4e2c-aba2-86ea277082da"
+          } }}
 
-
-      # --------------------------------------------------------
-      # CHECK AZURE LOGIN
-      # --------------------------------------------------------
-      - name: Check Azure Account
+      - name: Terraform
         shell: pwsh
         run: |
-          Write-Host "Checking Azure connection..."
-          az account show --output table
-
-
-      # --------------------------------------------------------
-      # TERRAFORM FORMAT
-      # --------------------------------------------------------
-      - name: Terraform Format Check
-        shell: pwsh
-        run: |
-          Write-Host "Checking Terraform formatting..."
-          terraform fmt -check -recursive
-
-
-      # --------------------------------------------------------
-      # TERRAFORM INIT
-      # --------------------------------------------------------
-      - name: Terraform Init
-        shell: pwsh
-        run: |
-          Write-Host "Running Terraform Init..."
+          terraform version
+          az account show
           terraform init
-
-
-      # --------------------------------------------------------
-      # TERRAFORM VALIDATE
-      # --------------------------------------------------------
-      - name: Terraform Validate
-        shell: pwsh
-        run: |
-          Write-Host "Running Terraform Validate..."
           terraform validate
-
-
-      # --------------------------------------------------------
-      # TERRAFORM PLAN
-      # --------------------------------------------------------
-      - name: Terraform Plan
-        shell: pwsh
-        run: |
-          Write-Host "Running Terraform Plan..."
-          terraform plan -out=tfplan
-
-
-      # --------------------------------------------------------
-      # SHOW PLAN
-      # --------------------------------------------------------
-      - name: Terraform Show Plan
-        shell: pwsh
-        run: |
-          Write-Host "Showing Terraform Plan..."
-          terraform show tfplan
-```
+          terraform plan
