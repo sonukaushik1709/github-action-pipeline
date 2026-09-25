@@ -25,10 +25,16 @@ jobs:
 
       - name: Terraform
         shell: powershell
-         working-directory: environment/dev
         run: |
+          Write-Host "Current directory:"
+          Get-Location
+      
+          Write-Host "Terraform files:"
+          Get-ChildItem -Path .\environment\dev -Filter *.tf
+      
           terraform version
           az account show
-          terraform init
-          terraform validate
-          terraform plan
+      
+          terraform -chdir=environment/dev init
+          terraform -chdir=environment/dev validate
+          terraform -chdir=environment/dev plan
