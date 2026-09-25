@@ -26,10 +26,10 @@ jobs:
       - name: Terraform
         shell: powershell
         run: |
-          Write-Host "Current directory:"
+          Write-Host "Terraform Directory:"
           Get-Location
       
-          Write-Host "Terraform files:"
+          Write-Host "Terraform Files:"
           Get-ChildItem -Path .\environment\dev -Filter *.tf
       
           terraform version
