@@ -25,6 +25,7 @@ jobs:
 
       - name: Terraform
         shell: powershell
+         working-directory: environment/dev
         run: |
           terraform version
           az account show
