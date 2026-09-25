@@ -21,12 +21,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v3
         with:
-          creds: ${{ {
-            "subscriptionId": "e6c26bc4-adcc-4139-a252-2dd836325cad",
-            "clientId": "ca524947-5d57-44aa-9a5a-6083411e0583",
-            "tenantId": "0b0fd2eb-b552-4536-923d-c808c8fdd80d",
-            "objectId": "26bbde6c-c4f9-4e2c-aba2-86ea277082da"
-          } }}
+          creds: '{"subscriptionId":"e6c26bc4-adcc-4139-a252-2dd836325cad","clientId":"ca524947-5d57-44aa-9a5a-6083411e0583","tenantId":"0b0fd2eb-b552-4536-923d-c808c8fdd80d","objectId":"26bbde6c-c4f9-4e2c-aba2-86ea277082da"}'
 
       - name: Terraform
         shell: pwsh
