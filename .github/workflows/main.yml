@@ -1,21 +1,111 @@
-name: Test Self Hosted Runner
+```yaml
+name: Terraform Pipeline
 
 on:
   push:
     branches:
       - feature/106
 
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
-  test:
+
+  # ============================================================
+  # JOB 1: TEST SELF-HOSTED RUNNER
+  # ============================================================
+  runner-test:
+    name: Test Self Hosted Runner
     runs-on: self-hosted
 
     steps:
-      - name: Checkout code
+
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Test Runner
+        shell: pwsh
         run: |
-          echo "Hello from GitHub Actions"
-          echo "Runner Name: $env:RUNNER_NAME"
+          Write-Host "Hello from GitHub Actions"
+          Write-Host "Runner Name: $env:RUNNER_NAME"
+          Write-Host "Operating System: $env:RUNNER_OS"
+          Write-Host "Architecture: $env:RUNNER_ARCH"
           hostname
           whoami
+
+
+  # ============================================================
+  # JOB 2: TERRAFORM
+  # ============================================================
+  terraform:
+    name: Terraform Init and Plan
+    runs-on: self-hosted
+
+    needs:
+      - runner-test
+
+    steps:
+
+      # ----------------------------------------------------------
+      # CHECKOUT
+      # ----------------------------------------------------------
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+
+      # ----------------------------------------------------------
+      # CHECK TERRAFORM
+      # ----------------------------------------------------------
+      - name: Check Terraform
+        shell: pwsh
+        run: |
+          terraform version
+
+
+      # ----------------------------------------------------------
+      # TERRAFORM FORMAT CHECK
+      # ----------------------------------------------------------
+      - name: Terraform Format Check
+        shell: pwsh
+        run: |
+          terraform fmt -check -recursive
+
+
+      # ----------------------------------------------------------
+      # TERRAFORM INIT
+      # ----------------------------------------------------------
+      - name: Terraform Init
+        shell: pwsh
+        run: |
+          terraform init
+
+
+      # ----------------------------------------------------------
+      # TERRAFORM VALIDATE
+      # ----------------------------------------------------------
+      - name: Terraform Validate
+        shell: pwsh
+        run: |
+          terraform validate
+
+
+      # ----------------------------------------------------------
+      # TERRAFORM PLAN
+      # ----------------------------------------------------------
+      - name: Terraform Plan
+        shell: pwsh
+        run: |
+          terraform plan -out=tfplan
+
+
+      # ----------------------------------------------------------
+      # SHOW PLAN
+      # ----------------------------------------------------------
+      - name: Terraform Show Plan
+        shell: pwsh
+        run: |
+          terraform show tfplan
+```
+
